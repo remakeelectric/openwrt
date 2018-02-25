@@ -782,8 +782,8 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
 +	applet_long_options = nslookup_longopts;
 +#endif
 +
-+	opt_complementary = "q::";
-+	opts = getopt32(argv, "+q:*p:+r:+t:+s",
++
++	opts = getopt32(argv, "+q:*p:+r:+t:+s" "\0" "q::",
 +	                &type_strings, &default_port,
 +	                &default_retry, &default_timeout);
 +
