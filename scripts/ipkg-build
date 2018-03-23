@@ -53,14 +53,6 @@ pkg_appears_sane() {
 	fi
 
 	if [ -f $CONTROL/conffiles ]; then
-		rm -f $CONTROL/conffiles.resolved
-
-		for cf in `$FIND $(sed -e "s!^/!$pkg_dir/!" $CONTROL/conffiles) -type f`; do
-			echo "${cf#$pkg_dir}" >> $CONTROL/conffiles.resolved
-		done
-
-		rm $CONTROL/conffiles
-		mv $CONTROL/conffiles.resolved $CONTROL/conffiles
 		chmod 0644 $CONTROL/conffiles
 	fi
 
