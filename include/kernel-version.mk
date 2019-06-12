@@ -2,11 +2,11 @@
 
 LINUX_RELEASE?=1
 
-LINUX_VERSION-4.9 = .178
-LINUX_VERSION-4.14 = .121
+LINUX_VERSION-4.9 = .181
+LINUX_VERSION-4.14 = .125
 
-LINUX_KERNEL_HASH-4.9.178 = 13ffd8b0725d9ce9f9e927f4748ef640b049d7c69f21b28ca0d976cc23072566
-LINUX_KERNEL_HASH-4.14.121 = 2eecd6825a0998c8b6dd686cd4cd76e9f0d195bbace89f0b82495cc11ddb2884
+LINUX_KERNEL_HASH-4.9.181 = 8fcd223e11cba322801bc38cdb8b581d64c0115f585dcb6604de8561b574fced
+LINUX_KERNEL_HASH-4.14.125 = 3e3dbc20215a28385bf46e2d0b8d9019df38ef1ee677e5e8870c7c3cde2ab318
 
 remove_uri_prefix=$(subst git://,,$(subst http://,,$(subst https://,,$(1))))
 sanitize_uri=$(call qstrip,$(subst @,_,$(subst :,_,$(subst .,_,$(subst -,_,$(subst /,_,$(1)))))))
