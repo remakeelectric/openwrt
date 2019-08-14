@@ -1,0 +1,60 @@
+--- a/drivers/watchdog/ath79_wdt.c
++++ b/drivers/watchdog/ath79_wdt.c
+@@ -29,6 +29,7 @@
+ #include <linux/watchdog.h>
+ #include <linux/clk.h>
+ #include <linux/err.h>
++#include <linux/interrupt.h>
+ #include <linux/of.h>
+ #include <linux/of_platform.h>
+ #include <linux/uaccess.h>
+@@ -97,7 +98,11 @@ static inline void ath79_wdt_enable(void
+ 	 */
+ 	udelay(2);
+ 
+-	ath79_wdt_wr(WDOG_REG_CTRL, WDOG_CTRL_ACTION_FCR);
++	/*
++	 * Watchdog reset is unreliable, sometimes causing hangs.
++	 * Use GPI to trigger panic instead, which is well handled
++	 */
++	ath79_wdt_wr(WDOG_REG_CTRL, WDOG_CTRL_ACTION_GPI);
+ 	/* flush write */
+ 	ath79_wdt_rr(WDOG_REG_CTRL);
+ }
+@@ -248,10 +253,17 @@ static struct miscdevice ath79_wdt_miscd
+ 	.fops = &ath79_wdt_fops,
+ };
+ 
++static irqreturn_t ath79_wdt_interrupt(int irq, void *dev_id)
++{
++	/* Let the kernel handle watchdog failure instead */
++	panic("watchdog timeout, deferring to panic");
++}
++
+ static int ath79_wdt_probe(struct platform_device *pdev)
+ {
+ 	u32 ctrl;
+ 	int err;
++	struct resource *irq_res;
+ 
+ 	if (wdt_base)
+ 		return -EBUSY;
+@@ -282,6 +294,18 @@ static int ath79_wdt_probe(struct platfo
+ 			max_timeout, timeout);
+ 	}
+ 
++	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
++	if (!irq_res) {
++		dev_err(&pdev->dev, "no IRQ resource\n");
++		return -EINVAL;
++	}
++
++	err = request_irq(irq_res->start, ath79_wdt_interrupt, 0, DRIVER_NAME, NULL);
++	if (err) {
++		dev_err(&pdev->dev, "Failed to register wdt IRQ, err=%d\n", err);
++		goto err_clk_disable;
++	}
++
+ 	ctrl = ath79_wdt_rr(WDOG_REG_CTRL);
+ 	boot_status = (ctrl & WDOG_CTRL_LAST_RESET) ? WDIOF_CARDRESET : 0;
+ 
