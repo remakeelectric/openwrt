@@ -32,6 +32,8 @@
 		modbus {
 			label = "red:modbus";
 			gpios = <&gpio 16 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "oneshot";
+			led-pattern = <100 33>;
 		};
 
 		led_etactica: etactica {
