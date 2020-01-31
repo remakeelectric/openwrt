@@ -194,6 +194,7 @@ define Device/gehua_ghl-r-001
   DEVICE_TITLE := GeHua GHL-R-001
   DEVICE_PACKAGES := \
 	kmod-mt7603 kmod-mt76x2 kmod-usb3 kmod-usb-ledtrig-usbport wpad-basic
+  DEFAULT := n
 endef
 TARGET_DEVICES += gehua_ghl-r-001
 
@@ -276,6 +277,7 @@ define Device/xiaomi_mir3g
   KERNEL_SIZE := 4096k
   IMAGE_SIZE := 32768k
   UBINIZE_OPTS := -E 5
+  BOARD_NAME := mir3g
   IMAGES += kernel1.bin rootfs0.bin
   IMAGE/kernel1.bin := append-kernel
   IMAGE/rootfs0.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
