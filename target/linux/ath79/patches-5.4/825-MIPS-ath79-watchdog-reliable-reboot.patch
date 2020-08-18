@@ -1,6 +1,6 @@
 --- a/drivers/watchdog/ath79_wdt.c
 +++ b/drivers/watchdog/ath79_wdt.c
-@@ -33,6 +33,7 @@
+@@ -29,6 +29,7 @@
  #include <linux/watchdog.h>
  #include <linux/clk.h>
  #include <linux/err.h>
@@ -8,7 +8,7 @@
  #include <linux/of.h>
  #include <linux/of_platform.h>
  #include <linux/uaccess.h>
-@@ -101,7 +102,11 @@ static inline void ath79_wdt_enable(void
+@@ -97,7 +98,11 @@ static inline void ath79_wdt_enable(void
  	 */
  	udelay(2);
  
@@ -21,7 +21,7 @@
  	/* flush write */
  	ath79_wdt_rr(WDOG_REG_CTRL);
  }
-@@ -252,9 +257,15 @@ static struct miscdevice ath79_wdt_miscd
+@@ -248,10 +253,17 @@ static struct miscdevice ath79_wdt_miscd
  	.fops = &ath79_wdt_fops,
  };
  
@@ -33,12 +33,13 @@
 +
  static int ath79_wdt_probe(struct platform_device *pdev)
  {
--	struct resource *res;
-+	struct resource *res, *irq_res;
  	u32 ctrl;
  	int err;
++	struct resource *irq_res;
  
-@@ -288,6 +299,18 @@ static int ath79_wdt_probe(struct platfo
+ 	if (wdt_base)
+ 		return -EBUSY;
+@@ -282,6 +294,18 @@ static int ath79_wdt_probe(struct platfo
  			max_timeout, timeout);
  	}
  
