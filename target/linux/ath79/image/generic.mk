@@ -818,6 +818,15 @@ define Device/dlink_dir-859-a1
 endef
 TARGET_DEVICES += dlink_dir-859-a1
 
+define Device/dragino_ms14
+  SOC := ar9331
+  DEVICE_TITLE := Dragino MS14
+  DEVICE_PACKAGES := kmod-usb-chipidea2
+  IMAGE_SIZE := 16000k
+  SUPPORTED_DEVICES += dragino2
+endef
+TARGET_DEVICES += dragino_ms14
+
 define Device/elecom_wrc-1750ghbk2-i
   SOC := qca9563
   DEVICE_VENDOR := ELECOM
