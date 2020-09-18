@@ -1,0 +1,130 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+#include "ar9331.dtsi"
+
+/ {
+	model = "Dragino MS14";
+	compatible = "dragino,ms14", "qca,ar9331";
+
+	/* label serial is at hexdump -v -e '1/1 "%c"' -s $((0x904)) -n 11 /dev/mtd6 (art partition) */
+
+	aliases {
+		led-boot = &led_sys;
+		led-failsafe = &led_sys;
+		led-upgrade = &led_sys;
+		serial0 = &uart;
+	};
+
+	/*
+	 * The physical switch on board is nominally connected to 
+	 * GPIO11, "jumpstart" but has no pullup from the factory
+	 * and consequently doesn't actually work.
+	 * See ms14_schematic_v2.2pdf
+	 * Swapping R7 and R215 will "fix" it.
+	keys {
+		compatible = "gpio-keys";
+		jumpstart {
+			linux,code = <KEY_WPS_BUTTON>;
+			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+		};
+	};
+	*/
+
+
+	leds {
+		compatible = "gpio-leds";
+		pinctrl-names = "default";
+		pinctrl-0 = <&switch_led_disable_pins>;
+
+		lan {
+			label = "dragino:red:lan";
+			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
+		};
+
+		wan {
+			label = "dragino:red:wan";
+			gpios = <&gpio 17 GPIO_ACTIVE_LOW>;
+		};
+
+		wlan {
+			label = "dragino:red:wlan";
+			gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "phy0tpt";
+		};
+
+		led_sys: sys {
+			label = "dragino:red:sys";
+			gpios = <&gpio 28 GPIO_ACTIVE_HIGH>;
+		};
+
+	};
+};
+
+&uart {
+	status = "okay";
+};
+
+&usb {
+	dr_mode = "host";
+	status = "okay";
+};
+
+&usb_phy {
+	status = "okay";
+};
+
+&eth0 {
+	status = "okay";
+	mtd-mac-address = <&art 0x0>;
+};
+
+&eth1 {
+	status = "okay";
+	mtd-mac-address = <&art 0x6>;
+};
+
+&spi {
+	num-chipselects = <1>;
+	status = "okay";
+
+	flash@0 {
+		compatible = "jedec,spi-nor";
+		spi-max-frequency = <50000000>;
+		reg = <0>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			uboot {
+				reg = <0x0 0x30000>;
+				read-only;
+			};
+
+			uboot-env {
+				reg = <0x30000 0x10000>;
+			};
+
+			firmware {
+				compatible = "denx,uimage";
+				reg = <0x40000 0xfb0000>;
+			};
+
+			art: art {
+				reg = <0xff0000 0x10000>;
+				read-only;
+			};
+		};
+	};
+};
+
+&wmac {
+	status = "okay";
+	mtd-cal-data = <&art 0x1000>;
+	mtd-mac-address = <&art 0x1002>;
+};
